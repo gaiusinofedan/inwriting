@@ -6,7 +6,7 @@
 <title>INWRITING</title>
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon-180.png"><meta name="theme-color" content="#0e0e10"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="INWRITING">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=EB+Garamond:ital@0;1&family=Lora:ital@0;1&family=Crimson+Pro:ital@0;1&family=Libre+Baskerville:ital@0;1&family=Spectral:ital@0;1&family=Newsreader:ital@0;1&family=Playfair+Display:ital@0;1&family=Literata:ital@0;1&family=Courier+Prime:ital@0;1&family=IBM+Plex+Mono&family=Inter&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=EB+Garamond:ital@0;1&family=Lora:ital@0;1&family=Crimson+Pro:ital@0;1&family=Libre+Baskerville:ital@0;1&family=Spectral:ital@0;1&family=Newsreader:ital@0;1&family=Playfair+Display:ital@0;1&family=Literata:ital@0;1&family=Courier+Prime:ital@0;1&family=IBM+Plex+Mono&family=Inter:wght@400;500&display=swap">
 <style>
 :root{--bg:#0e0e10;--panel:#16161a;--text:#d9d5cc;--muted:#6f6c66;--accent:#c9a46a;--line:#26262b;--font:'Cormorant Garamond',Georgia,serif;--size:22px;--lh:1.7;--measure:38em;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 :root[data-theme="charcoal"]{--bg:#1c1c1f;--panel:#232327;--text:#dcdad4;--muted:#77756f;--line:#303035}
@@ -32,11 +32,11 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 select,input.ren{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;font:inherit}
 input.ren{flex:1;min-width:0;padding:4px 8px;font-size:14px}
 .flex{flex:1;min-width:0;display:flex;flex-direction:column}
-header{display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;color:var(--muted);transition:opacity .4s}
+header{display:flex;align-items:center;gap:4px;padding:10px 12px;font-size:13px;color:var(--muted);transition:opacity .4s}
 header.hide,footer.hide{opacity:0}header:hover,footer:hover{opacity:1}
-.brand{letter-spacing:.2em;text-transform:uppercase;font-size:11px}.sp{flex:1}
-button{font:inherit;background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;cursor:pointer}
-button:hover,button.on{color:var(--text);border-color:var(--muted)}
+.brand{letter-spacing:.2em;text-transform:uppercase;font-size:11px;font-weight:500;color:var(--text)}.sp{flex:1}
+button{font:inherit;background:none;border:0;color:var(--muted);border-radius:8px;padding:6px 8px;cursor:pointer}
+button:hover{color:var(--text)}button.on{color:var(--accent)}
 button.bare{border:0;padding:2px 6px}
 main{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:6vh 20px 40vh;scroll-behavior:smooth}
 .page{width:100%;max-width:var(--measure)}
@@ -57,13 +57,30 @@ input[type=text]{flex:1;min-width:0;background:var(--bg);border:1px solid var(--
 #login h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-size:38px;margin:0 0 6px}
 #login p{color:var(--muted);font-size:14px;margin:0 0 24px}
 #login input{width:100%;box-sizing:border-box;margin-bottom:10px;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:12px;font:inherit;font-size:16px}
-#login button{width:100%;padding:12px}#login .lnk{border:0;margin-top:14px;font-size:13px}
+#login button{width:100%;padding:12px}#login #sendLink{background:var(--panel);color:var(--text)}#login .lnk{margin-top:14px;font-size:13px}
 #loginMsg{min-height:20px;color:var(--accent);font-size:13px;margin-top:12px}
 #acct{display:none}
+#share{position:fixed;inset:0;background:#000a;z-index:55;display:none;align-items:center;justify-content:center;padding:16px}
+#share .card{width:100%;max-width:420px;max-height:88vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.shh{display:flex;align-items:center}.shh b{flex:1;font-weight:500;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.shT{font-family:var(--font);font-size:22px;margin:8px 0 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#shNote{display:none;color:var(--muted);font-size:14px;margin-top:10px}
+.person{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:14px}.person span{flex:1;overflow:hidden;text-overflow:ellipsis}
+#shMsg{min-height:18px;color:var(--accent);font-size:13px;margin-top:10px}
+#shOwn select{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px;font:inherit;font-size:13px}
+.sec{padding:14px 10px 4px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 </style>
 </head>
 <body>
 <div id="login"><div class="box"><h1>INWRITING</h1><p>Sign in to keep your writing in sync.</p><input id="email" type="email" placeholder="you@email.com" autocomplete="email"><button id="sendLink">Email me a sign-in link</button><div id="loginMsg"></div><button class="lnk" id="localOnly">Use on this device only</button></div></div>
+<div id="share"><div class="card"><div class="shh"><b>Share</b><button class="bare" id="shClose">✕</button></div><div class="shT" id="shTitle"></div>
+<div id="shNote"></div>
+<div id="shOwn"><label>Add people</label><div class="r"><input type="text" id="shEmail" placeholder="Email address"><select id="shRole"><option value="edit">Can edit</option><option value="view">Can view</option></select><button id="shAdd">Add</button></div>
+<div id="people"></div>
+<label>Link access</label><div class="r"><select id="linkRole"><option value="">Restricted</option><option value="view">Anyone signed in can view</option><option value="edit">Anyone signed in can edit</option></select></div>
+<div class="r" style="margin-top:8px"><input type="text" id="shLink" readonly><button id="shCopy">Copy link</button></div>
+<small>Everyone signs in with their email to open a shared note. Add their email above so it appears in their library, or send the link.</small></div>
+<div id="shMsg"></div></div></div>
 <aside id="side">
   <div class="sh"><b>Library</b><button id="newNote">+ Note</button><button id="newFolder">+ Folder</button><button class="bare" id="closeSide">✕</button></div>
   <div id="tree"></div>
@@ -71,7 +88,7 @@ input[type=text]{flex:1;min-width:0;background:var(--bg);border:1px solid var(--
 <div class="flex">
 <header id="hd">
   <button id="menuBtn">☰</button><span class="brand">INWRITING</span><span class="sp"></span>
-  <button id="focusBtn">Focus</button><button id="copyBtn">Copy</button><button id="setBtn">Aa</button>
+  <button id="focusBtn">Focus</button><button id="shareBtn" style="display:none">Share</button><button id="copyBtn">Copy</button><button id="setBtn">Aa</button>
 </header>
 <main id="main"><div class="page">
   <input id="title" placeholder="Untitled" autocomplete="off">
@@ -96,8 +113,8 @@ const FONTS=[["Cormorant Garamond","Cormorant"],["EB Garamond","EB Garamond"],["
 const THEMES={ink:"#0e0e10",charcoal:"#1c1c1f",warm:"#16120e",blue:"#0b0f17"};
 let S={font:"Cormorant Garamond",size:22,lh:17,measure:38,theme:"ink",focus:false},legacy=null;
 try{const o=JSON.parse(localStorage.getItem("quill")||"{}");legacy=(o.title||o.text)?{title:o.title||"",text:o.text||""}:null;
- for(const k in S)if(k in o)S[k]=o[k]}catch(e){}
-let sb=null,uid=null,items=new Map(),cur=null,saveT=null,prefT=null,loadedAt=0,ready=false;
+ for(const k in S)if(k!=="focus"&&k in o)S[k]=o[k]}catch(e){}
+let sb=null,uid=null,me="",roles=new Map(),items=new Map(),cur=null,saveT=null,prefT=null,loadedAt=0,ready=false;
 let closed=new Set(),menuFor=null,renaming=null,confirmDel=null;
 
 /* ---------- settings ---------- */
@@ -110,7 +127,7 @@ function apply(){
 }
 function savePrefs(){
   try{localStorage.setItem("quill",JSON.stringify(S))}catch(e){}
-  if(uid){clearTimeout(prefT);prefT=setTimeout(()=>sb.from("prefs").upsert({user_id:uid,data:S}).then(()=>{}),800)}
+  if(uid){clearTimeout(prefT);prefT=setTimeout(()=>sb.from("prefs").upsert({user_id:uid,data:(({focus,...P})=>P)(S)}).then(()=>{}),800)}
 }
 function loadGF(name){const l=document.createElement("link");l.rel="stylesheet";
   l.href="https://fonts.googleapis.com/css2?family="+encodeURIComponent(name).replace(/%20/g,"+")+":ital@0;1&display=swap";document.head.appendChild(l);return l}
@@ -122,14 +139,23 @@ $("loadFont").onclick=()=>{const n=$("custom").value.trim();if(!n)return;const l
 ["size","lh","measure"].forEach(k=>$(k).oninput=e=>{S[k]=+e.target.value;apply();savePrefs()});
 $("setBtn").onclick=e=>{e.stopPropagation();$("panel").classList.toggle("open")};
 document.addEventListener("click",e=>{if(!$("panel").contains(e.target))$("panel").classList.remove("open")});
-$("focusBtn").onclick=()=>{S.focus=!S.focus;apply();savePrefs()};
+const isDesk=()=>innerWidth>800&&matchMedia("(hover:hover) and (pointer:fine)").matches;
+function setFocus(on){S.focus=on;apply();
+  if(isDesk()){if(on&&!document.fullscreenElement&&root.requestFullscreen)root.requestFullscreen().catch(()=>{});
+    if(!on&&document.fullscreenElement)document.exitFullscreen().catch(()=>{})}}
+$("focusBtn").onclick=()=>setFocus(!S.focus);
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&S.focus&&isDesk()){S.focus=false;apply()}});
 
 /* ---------- storage ---------- */
 const status=t=>$("saved").textContent=t;
 const uid_=()=>"n"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 function persistLocal(){try{localStorage.setItem("inw_lib",JSON.stringify([...items]));status("Saved on this device")}catch(e){status("Not saved")}}
 async function put(id){const it=items.get(id);if(!it)return;
-  if(uid){try{const {error}=await sb.from("notes").upsert(toRow(id,it));status(error?"Not saved":"Saved · synced")}catch(e){status("Not saved")}}else persistLocal()}
+  if(uid){try{let error;
+    if(isOwn(it))({error}=await sb.from("notes").upsert(toRow(id,it)));
+    else if(roleOf(id,it)==="edit")({error}=await sb.from("notes").update({title:it.title||null,text:it.text||null,updated_at:it.updatedAt}).eq("id",id));
+    else return;
+    status(error?"Not saved":"Saved · synced")}catch(e){status("Not saved")}}else persistLocal()}
 async function remove(id){items.delete(id);if(uid){try{await sb.from("notes").delete().eq("id",id)}catch(e){}}else persistLocal()}
 async function flush(){if(saveT){clearTimeout(saveT);saveT=null;await put(cur)}}
 
@@ -138,7 +164,7 @@ function grow(){const b=$("body");b.style.height="auto";b.style.height=Math.max(
 function stats(){const w=($("body").value.trim().match(/\S+/g)||[]).length;
   $("wc").textContent=w.toLocaleString()+(w===1?" word":" words");$("rt").textContent=w?Math.max(1,Math.round(w/230))+" min read":""}
 function loadDoc(id){const it=items.get(id);if(!it)return;cur=id;loadedAt=it.updatedAt||0;
-  $("title").value=it.title||"";$("body").value=it.text||"";grow();stats();
+  $("title").value=it.title||"";$("body").value=it.text||"";grow();stats();applyRO();
   try{localStorage.setItem("inw_cur",id)}catch(e){}renderTree()}
 async function openDoc(id){if(id===cur)return;await flush();loadDoc(id);if(innerWidth<=800)$("side").classList.remove("open");$("main").scrollTop=0}
 async function newNote(parent=null){await flush();const id=uid_();
@@ -165,23 +191,27 @@ addEventListener("resize",grow);
 /* ---------- library tree ---------- */
 function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
 function docRow(id,it){
-  const wrap=el("div"),r=el("div","row"+(id===cur?" cur":""));
+  const own=isOwn(it),wrap=el("div"),r=el("div","row"+(id===cur?" cur":""));
   r.append(el("span","t",it.title||"Untitled"));
   const m=el("button","bare m","⋯");m.onclick=e=>{e.stopPropagation();menuFor=menuFor===id?null:id;confirmDel=null;renderTree()};
   r.append(m);r.onclick=()=>openDoc(id);wrap.append(r);
-  if(menuFor===id){const a=el("div","acts"),sel=el("select");
-    sel.append(new Option("Move to…",""));sel.append(new Option("No folder","__root"));
-    for(const [fid,f] of items)if(f.type==="folder")sel.append(new Option(f.name,fid));
-    sel.onchange=async()=>{if(!sel.value)return;const n={...it,parent:sel.value==="__root"?null:sel.value,updatedAt:Date.now()};items.set(id,n);await put(id);menuFor=null;renderTree()};
-    const dl=el("button",null,"Download"),dn=el("button",null,confirmDel===id?"Confirm delete":"Delete");
+  if(menuFor===id){const a=el("div","acts");
+    if(own){const sel=el("select");
+      sel.append(new Option("Move to…",""));sel.append(new Option("No folder","__root"));
+      for(const [fid,f] of items)if(f.type==="folder")sel.append(new Option(f.name,fid));
+      sel.onchange=async()=>{if(!sel.value)return;const n={...it,parent:sel.value==="__root"?null:sel.value,updatedAt:Date.now()};items.set(id,n);await put(id);menuFor=null;renderTree()};
+      a.append(sel);
+      if(uid){const sh=el("button",null,"Share");sh.onclick=()=>{menuFor=null;renderTree();openShare(id)};a.append(sh)}}
+    const dl=el("button",null,"Download"),dn=el("button",null,confirmDel===id?"Confirm":(own?"Delete":"Remove"));
     dl.onclick=()=>download(id);
     dn.onclick=async()=>{if(confirmDel!==id){confirmDel=id;renderTree();return}
-      await remove(id);menuFor=confirmDel=null;if(cur===id){const next=[...items].filter(([,v])=>v.type==="doc").sort((a,b)=>b[1].updatedAt-a[1].updatedAt)[0];next?loadDoc(next[0]):newNote()}else renderTree()};
-    a.append(sel,dl,dn);wrap.append(a)}
+      if(own)await remove(id);else{try{await sb.from("shares").delete().eq("note_id",id).eq("email",me)}catch(e){}items.delete(id);roles.delete(id)}
+      menuFor=confirmDel=null;if(cur===id){const next=[...items].filter(([,v])=>v.type==="doc").sort((a,b)=>b[1].updatedAt-a[1].updatedAt)[0];next?loadDoc(next[0]):newNote()}else renderTree()};
+    a.append(dl,dn);wrap.append(a)}
   return wrap}
 function renderTree(){
   const t=$("tree");t.textContent="";
-  const docs=[...items].filter(([,v])=>v.type==="doc"),folders=[...items].filter(([,v])=>v.type==="folder").sort((a,b)=>a[1].name.localeCompare(b[1].name));
+  const docs=[...items].filter(([,v])=>v.type==="doc"&&isOwn(v)),shared=[...items].filter(([,v])=>v.type==="doc"&&!isOwn(v)),folders=[...items].filter(([,v])=>v.type==="folder").sort((a,b)=>a[1].name.localeCompare(b[1].name));
   const byDate=(a,b)=>(b[1].updatedAt||0)-(a[1].updatedAt||0);
   docs.filter(([,d])=>!d.parent||!items.has(d.parent)).sort(byDate).forEach(([id,d])=>t.append(docRow(id,d)));
   for(const [fid,f] of folders){
@@ -203,6 +233,7 @@ function renderTree(){
       a.append(rn,dn);wrap.append(a)}
     if(!isClosed&&kids.length){const k=el("div","kids");kids.forEach(([id,d])=>k.append(docRow(id,d)));wrap.append(k)}
     t.append(wrap)}
+  if(shared.length){t.append(el("div","sec","Shared with me"));shared.sort(byDate).forEach(([id,d])=>t.append(docRow(id,d)))}
   if(!items.size)t.append(el("div","row","No notes yet"));
 }
 $("newNote").onclick=()=>newNote();$("newFolder").onclick=newFolder;
@@ -216,42 +247,93 @@ function firstOpen(){
     cur=items.has(c)?c:[...items].filter(([,v])=>v.type==="doc").sort((a,b)=>b[1].updatedAt-a[1].updatedAt)[0][0]}
   loadDoc(cur)}
 const CFG={url:"https://ycdheygbqkscnvdwjtsv.supabase.co", key:"sb_publishable_4Ld77tbggit45cMJ_OTXhg_kTy7ShVP"};
-const toRow=(id,i)=>({id,user_id:uid,type:i.type,title:i.title||null,name:i.name||null,text:i.text||null,parent:i.parent||null,updated_at:i.updatedAt||Date.now()});
-const fromRow=r=>({type:r.type,title:r.title||"",name:r.name||"",text:r.text||"",parent:r.parent||null,updatedAt:Number(r.updated_at)});
+const toRow=(id,i)=>({id,user_id:uid,type:i.type,title:i.title||null,name:i.name||null,text:i.text||null,parent:i.parent||null,link_role:i.linkRole||null,updated_at:i.updatedAt||Date.now()});
+const fromRow=r=>({type:r.type,title:r.title||"",name:r.name||"",text:r.text||"",parent:r.parent||null,owner:r.user_id,linkRole:r.link_role||null,updatedAt:Number(r.updated_at)});
+const isOwn=it=>!it.owner||it.owner===uid;
+const roleOf=(id,it)=>isOwn(it)?"owner":(roles.get(id)||"view");
+function applyRO(){const it=items.get(cur);if(!it)return;const ro=!isOwn(it)&&roleOf(cur,it)!=="edit";
+  $("title").readOnly=ro;$("body").readOnly=ro;if(ro)status("View only")}
 function afterRemote(){const it=items.get(cur);
   if(!it){const n=[...items].filter(([,v])=>v.type==="doc")[0];if(n)loadDoc(n[0]);else firstOpen();return}
-  if(!saveT&&(it.updatedAt||0)!==loadedAt&&document.activeElement!==$("body")&&document.activeElement!==$("title"))loadDoc(cur);else renderTree()}
+  if(!saveT&&(it.updatedAt||0)!==loadedAt&&document.activeElement!==$("body")&&document.activeElement!==$("title"))loadDoc(cur);else{renderTree();applyRO()}}
 function onChange(p){
   if(p.eventType==="DELETE"){items.delete(p.old.id)}
-  else{const r=fromRow(p.new),loc=items.get(p.new.id);if(loc&&r.updatedAt<=(loc.updatedAt||0))return;items.set(p.new.id,r)}
+  else{const r=fromRow(p.new),loc=items.get(p.new.id);
+    if(loc&&r.updatedAt<=(loc.updatedAt||0)){if(r.linkRole!==loc.linkRole)items.set(p.new.id,{...loc,linkRole:r.linkRole});return}
+    items.set(p.new.id,r);if(!isOwn(r)&&!roles.has(p.new.id))refetchAll()}
   afterRemote()}
+async function refetchAll(){
+  const [n,s]=await Promise.all([sb.from("notes").select("*"),sb.from("shares").select("note_id,role,email")]);
+  if(s.data)roles=new Map(s.data.filter(x=>x.email===me).map(x=>[x.note_id,x.role]));
+  if(!n.data)return;
+  const ids=new Set(n.data.map(r=>r.id));
+  for(const r of n.data){const x=fromRow(r),loc=items.get(r.id);
+    if(!loc||x.updatedAt>(loc.updatedAt||0))items.set(r.id,x);else items.set(r.id,{...loc,linkRole:x.linkRole})}
+  for(const [id,it] of [...items])if(!ids.has(id)&&(id!==cur||!isOwn(it)))items.delete(id);
+  afterRemote()}
+async function handleLink(){
+  let p="";try{p=localStorage.getItem("inw_pending")||""}catch(e){}
+  const tok=location.hash.startsWith("#n=")?location.hash:p;if(!tok.startsWith("#n="))return;
+  const id=tok.slice(3);try{localStorage.removeItem("inw_pending")}catch(e){}
+  history.replaceState(null,"",location.pathname);
+  if(!items.has(id)){try{await sb.rpc("claim_linked_note",{nid:id})}catch(e){}await refetchAll()}
+  if(items.has(id))await openDoc(id)}
 function loadLocal(){try{items=new Map(JSON.parse(localStorage.getItem("inw_lib")||"[]"))}catch(e){items=new Map()}ready=true;firstOpen()}
 async function startCloud(session){
-  uid=session.user.id;$("login").style.display="none";$("who").textContent=session.user.email||"";$("acct").style.display="block";
-  const {data:rows,error}=await sb.from("notes").select("*");
-  if(error){uid=null;status("Couldn't reach cloud");loadLocal();return}
-  items=new Map((rows||[]).map(r=>[r.id,fromRow(r)]));
+  uid=session.user.id;me=(session.user.email||"").toLowerCase();
+  $("login").style.display="none";$("who").textContent=me;$("acct").style.display="block";$("shareBtn").style.display="";
+  const [n,sh]=await Promise.all([sb.from("notes").select("*"),sb.from("shares").select("note_id,role,email")]);
+  if(n.error){uid=null;status("Couldn't reach cloud");loadLocal();return}
+  items=new Map((n.data||[]).map(r=>[r.id,fromRow(r)]));
+  roles=new Map(((sh&&sh.data)||[]).filter(x=>x.email===me).map(x=>[x.note_id,x.role]));
   if(!items.size){try{const old=JSON.parse(localStorage.getItem("inw_lib")||"[]");
     if(old.length){items=new Map(old);await sb.from("notes").upsert(old.map(([id,i])=>toRow(id,i)))}}catch(e){}}
   try{const pr=await sb.from("prefs").select("data").maybeSingle();
-    if(pr.data&&pr.data.data){for(const k in S)if(k in pr.data.data)S[k]=pr.data.data[k];
+    if(pr.data&&pr.data.data){for(const k in S)if(k!=="focus"&&k in pr.data.data)S[k]=pr.data.data[k];
       if(!FONTS.some(f=>f[0]===S.font))loadGF(S.font);apply();try{localStorage.setItem("quill",JSON.stringify(S))}catch(e){}}}catch(e){}
   ready=true;firstOpen();
-  sb.channel("notes-"+uid).on("postgres_changes",{event:"*",schema:"public",table:"notes",filter:"user_id=eq."+uid},onChange).subscribe();
-  document.addEventListener("visibilitychange",async()=>{
-    if(document.visibilityState!=="visible"||saveT)return;
-    const {data}=await sb.from("notes").select("*");if(!data)return;
-    const ids=new Set(data.map(r=>r.id));
-    for(const r of data){const n=fromRow(r),loc=items.get(r.id);if(!loc||n.updatedAt>(loc.updatedAt||0))items.set(r.id,n)}
-    for(const id of [...items.keys()])if(!ids.has(id)&&id!==cur)items.delete(id);
-    afterRemote()})
-}
+  sb.channel("inw-"+uid).on("postgres_changes",{event:"*",schema:"public",table:"notes"},onChange).on("postgres_changes",{event:"*",schema:"public",table:"shares"},()=>refetchAll()).subscribe();
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&!saveT)refetchAll()});
+  handleLink()}
+
+/* ---------- sharing ---------- */
+let shareId=null;
+async function openShare(id){
+  await flush();const it=items.get(id);if(!it||!uid)return;shareId=id;const own=isOwn(it);
+  $("shTitle").textContent=it.title||"Untitled";$("shMsg").textContent="";
+  $("shOwn").style.display=own?"block":"none";$("shNote").style.display=own?"none":"block";
+  $("shNote").textContent=roleOf(id,it)==="edit"?"This note was shared with you. You can edit it.":"This note was shared with you. You can view it.";
+  if(own){$("linkRole").value=it.linkRole||"";$("shLink").value=location.origin+"/#n="+id;renderShares()}
+  $("share").style.display="flex"}
+async function renderShares(){
+  const {data}=await sb.from("shares").select("*").eq("note_id",shareId).eq("owner_id",uid);
+  const box=$("people");box.textContent="";
+  (data||[]).sort((a,b)=>a.email.localeCompare(b.email)).forEach(sr=>{
+    const row=el("div","person"),sel=el("select");sel.append(new Option("Can edit","edit"),new Option("Can view","view"));sel.value=sr.role;
+    sel.onchange=async()=>{await sb.from("shares").update({role:sel.value}).eq("note_id",shareId).eq("email",sr.email)};
+    const x=el("button","bare","✕");x.onclick=async()=>{await sb.from("shares").delete().eq("note_id",shareId).eq("email",sr.email);renderShares()};
+    row.append(el("span",null,sr.email),sel,x);box.append(row)})}
+$("shareBtn").onclick=()=>openShare(cur);
+$("shClose").onclick=()=>{$("share").style.display="none"};
+$("share").onclick=e=>{if(e.target===$("share"))$("share").style.display="none"};
+$("shAdd").onclick=async()=>{const em=$("shEmail").value.trim().toLowerCase();
+  if(!/^\S+@\S+\.\S+$/.test(em)){$("shMsg").textContent="Enter a valid email address.";return}
+  if(em===me){$("shMsg").textContent="That's your own email.";return}
+  const {error}=await sb.from("shares").upsert({note_id:shareId,owner_id:uid,email:em,role:$("shRole").value},{onConflict:"note_id,email"});
+  $("shMsg").textContent=error?"Couldn't share. Try again.":"Shared. Send them the link below.";if(!error){$("shEmail").value="";renderShares()}};
+$("linkRole").onchange=async()=>{const v=$("linkRole").value||null,it=items.get(shareId);if(!it)return;
+  items.set(shareId,{...it,linkRole:v});
+  const {error}=await sb.from("notes").update({link_role:v}).eq("id",shareId);
+  $("shMsg").textContent=error?"Couldn't change link access.":(v?"Anyone signed in with the link can open it.":"Link access is off.")};
+$("shCopy").onclick=async()=>{try{await navigator.clipboard.writeText($("shLink").value)}catch(e){$("shLink").select();document.execCommand("copy")}
+  $("shMsg").textContent="Link copied."};
 $("sendLink").onclick=async()=>{const email=$("email").value.trim();if(!email)return;$("loginMsg").textContent="Sending…";
   const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});
   $("loginMsg").textContent=error?error.message:"Check your email for the sign-in link."};
 $("localOnly").onclick=()=>{$("login").style.display="none";loadLocal()};
 $("signOut").onclick=async()=>{await flush();await sb.auth.signOut();location.reload()};
 if(!FONTS.some(f=>f[0]===S.font))loadGF(S.font);
+if(location.hash.startsWith("#n=")){try{localStorage.setItem("inw_pending",location.hash)}catch(e){}}
 apply();
 if(innerWidth>800)$("side").classList.add("open");
 (async()=>{
