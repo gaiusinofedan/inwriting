@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>INWRITING</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon-180.png"><meta name="theme-color" content="#0e0e10"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="INWRITING">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=EB+Garamond:ital@0;1&family=Lora:ital@0;1&family=Crimson+Pro:ital@0;1&family=Libre+Baskerville:ital@0;1&family=Spectral:ital@0;1&family=Newsreader:ital@0;1&family=Playfair+Display:ital@0;1&family=Literata:ital@0;1&family=Courier+Prime:ital@0;1&family=IBM+Plex+Mono&family=Inter&display=swap">
+<style>
+:root{--bg:#0e0e10;--panel:#16161a;--text:#d9d5cc;--muted:#6f6c66;--accent:#c9a46a;--line:#26262b;--font:'Cormorant Garamond',Georgia,serif;--size:22px;--lh:1.7;--measure:38em;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme="charcoal"]{--bg:#1c1c1f;--panel:#232327;--text:#dcdad4;--muted:#77756f;--line:#303035}
+:root[data-theme="warm"]{--bg:#16120e;--panel:#1e1913;--text:#e0d6c3;--muted:#7d7261;--accent:#d0a35c;--line:#2b241b}
+:root[data-theme="blue"]{--bg:#0b0f17;--panel:#121722;--text:#cfd6e4;--muted:#657089;--accent:#8fb0e8;--line:#1c2433}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;display:flex;overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+#side{width:280px;flex:none;background:var(--panel);border-right:1px solid var(--line);display:none;flex-direction:column;overflow:hidden}
+#side.open{display:flex}
+@media(max-width:800px){#side{position:fixed;inset:env(safe-area-inset-top,0px) 0 0 0;width:auto;z-index:25}}
+.sh{display:flex;gap:8px;padding:14px;align-items:center}
+.sh b{flex:1;font-weight:500;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+#tree{flex:1;overflow-y:auto;padding:0 8px 20px}
+.row{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted)}
+.row:hover{background:var(--bg)}.row.cur{background:var(--bg);color:var(--text)}
+.row .t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .m{opacity:0;padding:0 6px}.row:hover .m,.row.cur .m{opacity:1}
+@media(hover:none){.row .m{opacity:1}}
+.kids{margin-left:14px;border-left:1px solid var(--line);padding-left:4px}
+.acts{display:flex;gap:6px;flex-wrap:wrap;padding:4px 10px 10px}
+.acts button,.acts select{font-size:12px;padding:4px 8px}
+select,input.ren{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;font:inherit}
+input.ren{flex:1;min-width:0;padding:4px 8px;font-size:14px}
+.flex{flex:1;min-width:0;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;color:var(--muted);transition:opacity .4s}
+header.hide,footer.hide{opacity:0}header:hover,footer:hover{opacity:1}
+.brand{letter-spacing:.2em;text-transform:uppercase;font-size:11px}.sp{flex:1}
+button{font:inherit;background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;cursor:pointer}
+button:hover,button.on{color:var(--text);border-color:var(--muted)}
+button.bare{border:0;padding:2px 6px}
+main{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:6vh 20px 40vh;scroll-behavior:smooth}
+.page{width:100%;max-width:var(--measure)}
+#title{width:100%;background:none;border:0;outline:0;color:var(--text);font-family:var(--font);font-size:calc(var(--size)*1.5);margin-bottom:.8em;padding:0}
+#title::placeholder,#body::placeholder{color:var(--muted);opacity:.6;font-style:italic}
+#body{width:100%;min-height:60vh;background:none;border:0;outline:0;resize:none;color:var(--text);font-family:var(--font);font-size:var(--size);line-height:var(--lh);padding:0;overflow:hidden;caret-color:var(--accent)}
+::selection{background:color-mix(in srgb,var(--accent) 35%,transparent)}
+footer{display:flex;gap:16px;padding:8px 16px;font-size:12px;color:var(--muted);transition:opacity .4s}
+#panel{position:fixed;right:12px;top:calc(48px + env(safe-area-inset-top,0px));width:min(320px,calc(100% - 24px));max-height:70vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:none;z-index:40;box-shadow:0 20px 60px #0008}
+#panel.open{display:block}
+label{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}label:first-child{margin-top:0}
+.fonts{display:grid;grid-template-columns:1fr 1fr;gap:6px}.fonts button{font-size:15px;text-align:left;padding:8px 10px}
+.r{display:flex;gap:8px;align-items:center}input[type=range]{flex:1;accent-color:var(--accent)}
+input[type=text]{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 10px;font:inherit;font-size:14px}
+.sw{width:30px;height:30px;border-radius:50%;padding:0}small{color:var(--muted);font-size:11px;display:block;margin-top:6px}
+#login{position:fixed;inset:0;background:var(--bg);z-index:60;display:none;align-items:center;justify-content:center;padding:24px}
+#login .box{width:100%;max-width:340px;text-align:center}
+#login h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;font-size:38px;margin:0 0 6px}
+#login p{color:var(--muted);font-size:14px;margin:0 0 24px}
+#login input{width:100%;box-sizing:border-box;margin-bottom:10px;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:12px;font:inherit;font-size:16px}
+#login button{width:100%;padding:12px}#login .lnk{border:0;margin-top:14px;font-size:13px}
+#loginMsg{min-height:20px;color:var(--accent);font-size:13px;margin-top:12px}
+#acct{display:none}
+</style>
+</head>
+<body>
+<div id="login"><div class="box"><h1>INWRITING</h1><p>Sign in to keep your writing in sync.</p><input id="email" type="email" placeholder="you@email.com" autocomplete="email"><button id="sendLink">Email me a sign-in link</button><div id="loginMsg"></div><button class="lnk" id="localOnly">Use on this device only</button></div></div>
+<aside id="side">
+  <div class="sh"><b>Library</b><button id="newNote">+ Note</button><button id="newFolder">+ Folder</button><button class="bare" id="closeSide">✕</button></div>
+  <div id="tree"></div>
+</aside>
+<div class="flex">
+<header id="hd">
+  <button id="menuBtn">☰</button><span class="brand">INWRITING</span><span class="sp"></span>
+  <button id="focusBtn">Focus</button><button id="copyBtn">Copy</button><button id="setBtn">Aa</button>
+</header>
+<main id="main"><div class="page">
+  <input id="title" placeholder="Untitled" autocomplete="off">
+  <textarea id="body" placeholder="Begin anywhere." spellcheck="true"></textarea>
+</div></main>
+<footer id="ft"><span id="wc">0 words</span><span id="rt"></span><span class="sp"></span><span id="saved"></span></footer>
+</div>
+<div id="panel">
+  <label>Typeface</label><div class="fonts" id="fonts"></div>
+  <label>Any Google Font</label>
+  <div class="r"><input type="text" id="custom" placeholder="e.g. Fraunces"><button id="loadFont">Use</button></div>
+  <small id="fontMsg">Type any name from fonts.google.com</small>
+  <label>Size</label><div class="r"><input type="range" id="size" min="16" max="36"></div>
+  <label>Line height</label><div class="r"><input type="range" id="lh" min="12" max="22"></div>
+  <label>Column width</label><div class="r"><input type="range" id="measure" min="26" max="56"></div>
+  <label>Background</label><div class="r" id="themes"></div>
+  <div id="acct"><label>Account</label><small id="who"></small><div class="r" style="margin-top:8px"><button id="signOut">Sign out</button></div></div>
+</div>
+<script>
+const $=id=>document.getElementById(id),root=document.documentElement;
+const FONTS=[["Cormorant Garamond","Cormorant"],["EB Garamond","EB Garamond"],["Lora","Lora"],["Crimson Pro","Crimson Pro"],["Libre Baskerville","Baskerville"],["Spectral","Spectral"],["Newsreader","Newsreader"],["Playfair Display","Playfair"],["Literata","Literata"],["Courier Prime","Courier Prime"],["IBM Plex Mono","Plex Mono"],["Inter","Inter"]];
+const THEMES={ink:"#0e0e10",charcoal:"#1c1c1f",warm:"#16120e",blue:"#0b0f17"};
+let S={font:"Cormorant Garamond",size:22,lh:17,measure:38,theme:"ink",focus:false},legacy=null;
+try{const o=JSON.parse(localStorage.getItem("quill")||"{}");legacy=(o.title||o.text)?{title:o.title||"",text:o.text||""}:null;
+ for(const k in S)if(k in o)S[k]=o[k]}catch(e){}
+let sb=null,uid=null,items=new Map(),cur=null,saveT=null,prefT=null,loadedAt=0,ready=false;
+let closed=new Set(),menuFor=null,renaming=null,confirmDel=null;
+
+/* ---------- settings ---------- */
+function apply(){
+  root.style.setProperty("--font",`'${S.font}',Georgia,serif`);root.style.setProperty("--size",S.size+"px");
+  root.style.setProperty("--lh",S.lh/10);root.style.setProperty("--measure",S.measure+"em");
+  S.theme==="ink"?root.removeAttribute("data-theme"):root.setAttribute("data-theme",S.theme);
+  $("size").value=S.size;$("lh").value=S.lh;$("measure").value=S.measure;$("focusBtn").classList.toggle("on",S.focus);
+  document.querySelectorAll("#fonts button").forEach(b=>b.classList.toggle("on",b.dataset.f===S.font));grow();
+}
+function savePrefs(){
+  try{localStorage.setItem("quill",JSON.stringify(S))}catch(e){}
+  if(uid){clearTimeout(prefT);prefT=setTimeout(()=>sb.from("prefs").upsert({user_id:uid,data:S}).then(()=>{}),800)}
+}
+function loadGF(name){const l=document.createElement("link");l.rel="stylesheet";
+  l.href="https://fonts.googleapis.com/css2?family="+encodeURIComponent(name).replace(/%20/g,"+")+":ital@0;1&display=swap";document.head.appendChild(l);return l}
+FONTS.forEach(([f,l])=>{const b=document.createElement("button");b.textContent=l;b.dataset.f=f;b.style.fontFamily=`'${f}',serif`;b.onclick=()=>{S.font=f;apply();savePrefs()};$("fonts").appendChild(b)});
+Object.entries(THEMES).forEach(([t,c])=>{const b=document.createElement("button");b.className="sw";b.style.background=c;b.title=t;b.onclick=()=>{S.theme=t;apply();savePrefs()};$("themes").appendChild(b)});
+$("loadFont").onclick=()=>{const n=$("custom").value.trim();if(!n)return;const l=loadGF(n);$("fontMsg").textContent="Loading…";
+  l.onload=()=>document.fonts.load(`16px "${n}"`).then(r=>{if(r.length){S.font=n;apply();savePrefs();$("fontMsg").textContent=n+" applied"}else $("fontMsg").textContent="Couldn't find that font"});
+  l.onerror=()=>$("fontMsg").textContent="Couldn't find that font"};
+["size","lh","measure"].forEach(k=>$(k).oninput=e=>{S[k]=+e.target.value;apply();savePrefs()});
+$("setBtn").onclick=e=>{e.stopPropagation();$("panel").classList.toggle("open")};
+document.addEventListener("click",e=>{if(!$("panel").contains(e.target))$("panel").classList.remove("open")});
+$("focusBtn").onclick=()=>{S.focus=!S.focus;apply();savePrefs()};
+
+/* ---------- storage ---------- */
+const status=t=>$("saved").textContent=t;
+const uid_=()=>"n"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function persistLocal(){try{localStorage.setItem("inw_lib",JSON.stringify([...items]));status("Saved on this device")}catch(e){status("Not saved")}}
+async function put(id){const it=items.get(id);if(!it)return;
+  if(uid){try{const {error}=await sb.from("notes").upsert(toRow(id,it));status(error?"Not saved":"Saved · synced")}catch(e){status("Not saved")}}else persistLocal()}
+async function remove(id){items.delete(id);if(uid){try{await sb.from("notes").delete().eq("id",id)}catch(e){}}else persistLocal()}
+async function flush(){if(saveT){clearTimeout(saveT);saveT=null;await put(cur)}}
+
+/* ---------- documents ---------- */
+function grow(){const b=$("body");b.style.height="auto";b.style.height=Math.max(b.scrollHeight,innerHeight*.6)+"px"}
+function stats(){const w=($("body").value.trim().match(/\S+/g)||[]).length;
+  $("wc").textContent=w.toLocaleString()+(w===1?" word":" words");$("rt").textContent=w?Math.max(1,Math.round(w/230))+" min read":""}
+function loadDoc(id){const it=items.get(id);if(!it)return;cur=id;loadedAt=it.updatedAt||0;
+  $("title").value=it.title||"";$("body").value=it.text||"";grow();stats();
+  try{localStorage.setItem("inw_cur",id)}catch(e){}renderTree()}
+async function openDoc(id){if(id===cur)return;await flush();loadDoc(id);if(innerWidth<=800)$("side").classList.remove("open");$("main").scrollTop=0}
+async function newNote(parent=null){await flush();const id=uid_();
+  items.set(id,{type:"doc",title:"",text:"",parent,updatedAt:Date.now()});await put(id);loadDoc(id);
+  if(innerWidth<=800)$("side").classList.remove("open");$("title").focus()}
+async function newFolder(){const id=uid_();items.set(id,{type:"folder",name:"New folder",updatedAt:Date.now()});await put(id);renaming=id;renderTree()}
+function onType(){const it=items.get(cur);if(!it)return;
+  const n={...it,title:$("title").value,text:$("body").value,updatedAt:Date.now()};items.set(cur,n);loadedAt=n.updatedAt;
+  grow();stats();status("Saving…");clearTimeout(saveT);saveT=setTimeout(async()=>{saveT=null;await put(cur);renderTree()},700);
+  $("hd").classList.add("hide");$("ft").classList.add("hide");
+  if(S.focus){const b=$("body"),m=$("main"),p=b.selectionStart;requestAnimationFrame(()=>{m.scrollTop=Math.max(0,b.offsetTop+(p/Math.max(b.value.length,1))*b.scrollHeight-m.clientHeight*.45)})}}
+$("body").addEventListener("input",onType);$("title").addEventListener("input",onType);
+$("title").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("body").focus()}});
+["mousemove","touchstart"].forEach(ev=>document.addEventListener(ev,()=>{$("hd").classList.remove("hide");$("ft").classList.remove("hide")},{passive:true}));
+$("copyBtn").onclick=async()=>{const t=($("title").value?$("title").value+"\n\n":"")+$("body").value;
+  try{await navigator.clipboard.writeText(t)}catch(e){$("body").select();document.execCommand("copy")}
+  $("copyBtn").textContent="Copied";setTimeout(()=>$("copyBtn").textContent="Copy",1400)};
+function download(id){const it=items.get(id);if(!it)return;
+  const name=((it.title||"Untitled").replace(/[^\w\- ]+/g,"").trim()||"Untitled")+".txt";
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([(it.title?it.title+"\n\n":"")+(it.text||"")],{type:"text/plain"}));
+  a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+addEventListener("resize",grow);
+
+/* ---------- library tree ---------- */
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function docRow(id,it){
+  const wrap=el("div"),r=el("div","row"+(id===cur?" cur":""));
+  r.append(el("span","t",it.title||"Untitled"));
+  const m=el("button","bare m","⋯");m.onclick=e=>{e.stopPropagation();menuFor=menuFor===id?null:id;confirmDel=null;renderTree()};
+  r.append(m);r.onclick=()=>openDoc(id);wrap.append(r);
+  if(menuFor===id){const a=el("div","acts"),sel=el("select");
+    sel.append(new Option("Move to…",""));sel.append(new Option("No folder","__root"));
+    for(const [fid,f] of items)if(f.type==="folder")sel.append(new Option(f.name,fid));
+    sel.onchange=async()=>{if(!sel.value)return;const n={...it,parent:sel.value==="__root"?null:sel.value,updatedAt:Date.now()};items.set(id,n);await put(id);menuFor=null;renderTree()};
+    const dl=el("button",null,"Download"),dn=el("button",null,confirmDel===id?"Confirm delete":"Delete");
+    dl.onclick=()=>download(id);
+    dn.onclick=async()=>{if(confirmDel!==id){confirmDel=id;renderTree();return}
+      await remove(id);menuFor=confirmDel=null;if(cur===id){const next=[...items].filter(([,v])=>v.type==="doc").sort((a,b)=>b[1].updatedAt-a[1].updatedAt)[0];next?loadDoc(next[0]):newNote()}else renderTree()};
+    a.append(sel,dl,dn);wrap.append(a)}
+  return wrap}
+function renderTree(){
+  const t=$("tree");t.textContent="";
+  const docs=[...items].filter(([,v])=>v.type==="doc"),folders=[...items].filter(([,v])=>v.type==="folder").sort((a,b)=>a[1].name.localeCompare(b[1].name));
+  const byDate=(a,b)=>(b[1].updatedAt||0)-(a[1].updatedAt||0);
+  docs.filter(([,d])=>!d.parent||!items.has(d.parent)).sort(byDate).forEach(([id,d])=>t.append(docRow(id,d)));
+  for(const [fid,f] of folders){
+    const kids=docs.filter(([,d])=>d.parent===fid).sort(byDate),wrap=el("div"),r=el("div","row");
+    const isClosed=closed.has(fid);
+    r.append(el("span",null,isClosed?"▸":"▾"));
+    if(renaming===fid){const inp=el("input","ren");inp.value=f.name;
+      const done=async()=>{const v=inp.value.trim()||f.name;renaming=null;items.set(fid,{...f,name:v,updatedAt:Date.now()});await put(fid);renderTree()};
+      inp.onkeydown=e=>{if(e.key==="Enter")done()};inp.onblur=done;inp.onclick=e=>e.stopPropagation();r.append(inp);setTimeout(()=>{inp.focus();inp.select()})}
+    else r.append(el("span","t",f.name+(kids.length?"  "+kids.length:"")));
+    const add=el("button","bare m","+");add.title="New note here";add.onclick=e=>{e.stopPropagation();closed.delete(fid);newNote(fid)};
+    const m=el("button","bare m","⋯");m.onclick=e=>{e.stopPropagation();menuFor=menuFor===fid?null:fid;confirmDel=null;renderTree()};
+    r.append(add,m);r.onclick=()=>{isClosed?closed.delete(fid):closed.add(fid);renderTree()};wrap.append(r);
+    if(menuFor===fid){const a=el("div","acts"),rn=el("button",null,"Rename"),dn=el("button",null,confirmDel===fid?"Confirm delete":"Delete");
+      rn.onclick=()=>{renaming=fid;menuFor=null;renderTree()};
+      dn.onclick=async()=>{if(confirmDel!==fid){confirmDel=fid;renderTree();return}
+        for(const [id,d] of kids){items.set(id,{...d,parent:null,updatedAt:Date.now()});await put(id)}
+        await remove(fid);menuFor=confirmDel=null;renderTree()};
+      a.append(rn,dn);wrap.append(a)}
+    if(!isClosed&&kids.length){const k=el("div","kids");kids.forEach(([id,d])=>k.append(docRow(id,d)));wrap.append(k)}
+    t.append(wrap)}
+  if(!items.size)t.append(el("div","row","No notes yet"));
+}
+$("newNote").onclick=()=>newNote();$("newFolder").onclick=newFolder;
+$("menuBtn").onclick=()=>$("side").classList.toggle("open");$("closeSide").onclick=()=>$("side").classList.remove("open");
+
+/* ---------- boot ---------- */
+function firstOpen(){
+  if(![...items.values()].some(v=>v.type==="doc")){
+    const id=uid_();items.set(id,{type:"doc",title:legacy?legacy.title:"",text:legacy?legacy.text:"",parent:null,updatedAt:Date.now()});put(id);cur=id}
+  if(!cur||!items.has(cur)){let c=null;try{c=localStorage.getItem("inw_cur")}catch(e){}
+    cur=items.has(c)?c:[...items].filter(([,v])=>v.type==="doc").sort((a,b)=>b[1].updatedAt-a[1].updatedAt)[0][0]}
+  loadDoc(cur)}
+const CFG={url:"https://ycdheygbqkscnvdwjtsv.supabase.co", key:"sb_publishable_4Ld77tbggit45cMJ_OTXhg_kTy7ShVP"};
+const toRow=(id,i)=>({id,user_id:uid,type:i.type,title:i.title||null,name:i.name||null,text:i.text||null,parent:i.parent||null,updated_at:i.updatedAt||Date.now()});
+const fromRow=r=>({type:r.type,title:r.title||"",name:r.name||"",text:r.text||"",parent:r.parent||null,updatedAt:Number(r.updated_at)});
+function afterRemote(){const it=items.get(cur);
+  if(!it){const n=[...items].filter(([,v])=>v.type==="doc")[0];if(n)loadDoc(n[0]);else firstOpen();return}
+  if(!saveT&&(it.updatedAt||0)!==loadedAt&&document.activeElement!==$("body")&&document.activeElement!==$("title"))loadDoc(cur);else renderTree()}
+function onChange(p){
+  if(p.eventType==="DELETE"){items.delete(p.old.id)}
+  else{const r=fromRow(p.new),loc=items.get(p.new.id);if(loc&&r.updatedAt<=(loc.updatedAt||0))return;items.set(p.new.id,r)}
+  afterRemote()}
+function loadLocal(){try{items=new Map(JSON.parse(localStorage.getItem("inw_lib")||"[]"))}catch(e){items=new Map()}ready=true;firstOpen()}
+async function startCloud(session){
+  uid=session.user.id;$("login").style.display="none";$("who").textContent=session.user.email||"";$("acct").style.display="block";
+  const {data:rows,error}=await sb.from("notes").select("*");
+  if(error){uid=null;status("Couldn't reach cloud");loadLocal();return}
+  items=new Map((rows||[]).map(r=>[r.id,fromRow(r)]));
+  if(!items.size){try{const old=JSON.parse(localStorage.getItem("inw_lib")||"[]");
+    if(old.length){items=new Map(old);await sb.from("notes").upsert(old.map(([id,i])=>toRow(id,i)))}}catch(e){}}
+  try{const pr=await sb.from("prefs").select("data").maybeSingle();
+    if(pr.data&&pr.data.data){for(const k in S)if(k in pr.data.data)S[k]=pr.data.data[k];
+      if(!FONTS.some(f=>f[0]===S.font))loadGF(S.font);apply();try{localStorage.setItem("quill",JSON.stringify(S))}catch(e){}}}catch(e){}
+  ready=true;firstOpen();
+  sb.channel("notes-"+uid).on("postgres_changes",{event:"*",schema:"public",table:"notes",filter:"user_id=eq."+uid},onChange).subscribe();
+  document.addEventListener("visibilitychange",async()=>{
+    if(document.visibilityState!=="visible"||saveT)return;
+    const {data}=await sb.from("notes").select("*");if(!data)return;
+    const ids=new Set(data.map(r=>r.id));
+    for(const r of data){const n=fromRow(r),loc=items.get(r.id);if(!loc||n.updatedAt>(loc.updatedAt||0))items.set(r.id,n)}
+    for(const id of [...items.keys()])if(!ids.has(id)&&id!==cur)items.delete(id);
+    afterRemote()})
+}
+$("sendLink").onclick=async()=>{const email=$("email").value.trim();if(!email)return;$("loginMsg").textContent="Sending…";
+  const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});
+  $("loginMsg").textContent=error?error.message:"Check your email for the sign-in link."};
+$("localOnly").onclick=()=>{$("login").style.display="none";loadLocal()};
+$("signOut").onclick=async()=>{await flush();await sb.auth.signOut();location.reload()};
+if(!FONTS.some(f=>f[0]===S.font))loadGF(S.font);
+apply();
+if(innerWidth>800)$("side").classList.add("open");
+(async()=>{
+  if(CFG.url.startsWith("http")&&window.supabase){
+    sb=supabase.createClient(CFG.url,CFG.key);
+    const {data}=await sb.auth.getSession();
+    if(data.session){if(!uid)startCloud(data.session)}else $("login").style.display="flex";
+    sb.auth.onAuthStateChange((ev,s)=>{if(ev==="SIGNED_IN"&&s&&!uid)startCloud(s)});
+  }else loadLocal();
+})();
+</script>
+</body>
+</html>
