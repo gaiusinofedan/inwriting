@@ -38,7 +38,8 @@ header.hide,footer.hide{opacity:0}header:hover,footer:hover{opacity:1}
 button{font:inherit;background:none;border:0;color:var(--muted);border-radius:8px;padding:6px 8px;cursor:pointer}
 button:hover{color:var(--text)}button.on{color:var(--accent)}
 button.bare{border:0;padding:2px 6px}
-main{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:6vh 20px 40vh;scroll-behavior:smooth}
+main{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:6vh 20px 40vh;scroll-behavior:auto}
+.tw main{scroll-behavior:smooth}
 .page{width:100%;max-width:var(--measure)}
 #title{width:100%;background:none;border:0;outline:0;color:var(--text);font-family:var(--font);font-size:calc(var(--size)*1.5);margin-bottom:.8em;padding:0}
 #title::placeholder,#body::placeholder{color:var(--muted);opacity:.6;font-style:italic}
@@ -2464,7 +2465,11 @@ async function remove(id){items.delete(id);if(uid){try{await sb.from("notes").de
 async function flush(){if(saveT){clearTimeout(saveT);saveT=null;await put(cur)}}
 
 /* ---------- documents ---------- */
-function grow(){const b=$("body"),m=$("main"),st=m.scrollTop;b.style.height="auto";b.style.height=Math.max(b.scrollHeight,innerHeight*.6)+"px";m.scrollTo({top:st,behavior:"instant"});renderHL()}
+var fastGrow=false;
+function grow(){const b=$("body"),m=$("main");
+  if(fastGrow){fastGrow=false;if(b.scrollHeight>b.clientHeight)b.style.height=b.scrollHeight+"px";renderHL();return}
+  const st=m.scrollTop;b.style.height="auto";b.style.height=Math.max(b.scrollHeight,innerHeight*.6)+"px";m.scrollTo({top:st,behavior:"instant"});renderHL()}
+$("body").addEventListener("beforeinput",e=>{fastGrow=/^insert/.test(e.inputType||"")});
 function stats(){const w=($("body").value.trim().match(/\S+/g)||[]).length;
   $("wc").textContent=w.toLocaleString()+(w===1?" word":" words");$("rt").textContent=w?Math.max(1,Math.round(w/230))+" min read":""}
 function loadDoc(id){const it=items.get(id);if(!it)return;cur=id;loadedAt=it.updatedAt||0;
@@ -2835,6 +2840,8 @@ if(innerWidth>800)$("side").classList.add("open");
   $("focusBtn").addEventListener("click",()=>{if(S.focus)exitRest()});
   if(b.value.trim())setTimeout(()=>{if(document.activeElement!==b)enterRest()},300);
 })();
+
+(function(){const _a=apply;apply=function(){_a();root.classList.toggle("tw",!!S.focus)}})();
 </script>
 </body>
 </html>
