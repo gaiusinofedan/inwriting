@@ -95,6 +95,19 @@ input[type=text]{flex:1;min-width:0;background:var(--bg);border:1px solid var(--
 .hv{padding:9px 0;border-top:1px solid var(--line);font-size:14px}.hv .t{cursor:pointer}
 .hb{display:none;margin-top:8px}.hb pre{white-space:pre-wrap;font:inherit;font-size:13px;color:var(--muted);max-height:34vh;overflow-y:auto;margin:0 0 8px}
 .hb button{background:none;border:0;color:var(--accent);font:inherit;font-size:13px;cursor:pointer;padding:0}
+@media(max-width:800px),(hover:none),(pointer:coarse){#focusBtn{display:none}}
+#fmt{position:fixed;left:50%;transform:translateX(-50%);bottom:56px;display:none;gap:2px;padding:4px;background:var(--panel);border-radius:12px;box-shadow:0 8px 30px #000a;z-index:28}
+#fmt.show{display:flex}
+#fmt button{min-width:40px;padding:8px 10px;font-size:15px;color:var(--text)}
+#fmt button:hover{color:var(--accent)}
+#rd{position:absolute;left:0;right:0;display:none;z-index:2;font-family:var(--font);font-size:var(--size);line-height:var(--lh);color:var(--text);overflow-wrap:break-word;cursor:text}
+#rd.on{display:block}#body.rest{opacity:0;pointer-events:none}
+#rd .l{white-space:pre-wrap;min-height:calc(var(--size)*var(--lh))}
+#rd .h1{font-size:1.45em;line-height:1.25;margin:.5em 0 .15em}
+#rd .h2{font-size:1.2em;line-height:1.3;margin:.4em 0 .1em}
+#rd .q{border-left:2px solid var(--accent);padding-left:1em;color:var(--muted)}
+#rd .sb{text-align:center;color:var(--muted);letter-spacing:.5em}
+#rd .b{font-weight:700}#rd .i{font-style:italic}
 </style>
 </head>
 <body>
@@ -118,8 +131,9 @@ input[type=text]{flex:1;min-width:0;background:var(--bg);border:1px solid var(--
 </header>
 <main id="main"><div class="page">
   <input id="title" placeholder="Untitled" autocomplete="off">
-  <div id="hl" aria-hidden="true"></div><textarea id="body" placeholder="Begin anywhere." spellcheck="true"></textarea>
+  <div id="hl" aria-hidden="true"></div><div id="rd" aria-hidden="true"></div><textarea id="body" placeholder="Begin anywhere." spellcheck="true"></textarea>
 </div></main>
+<div id="fmt"><button data-f="b" title="Bold"><b>B</b></button><button data-f="i" title="Italic"><i>I</i></button><button data-f="h" title="Heading">H</button><button data-f="q" title="Quote">❝</button><button data-f="s" title="Scene break">⁂</button></div>
 <footer id="ft"><span id="wc">0 words</span><span id="rt"></span><span id="pres"></span><span class="sp"></span><button id="hisBtn" style="display:none">History</button><span id="saved"></span></footer>
 </div>
 <div id="ann"><div id="annF"></div><div id="annNew"><q id="annQ"></q><textarea id="annT" placeholder="Add a comment"></textarea><button id="annAdd">Comment</button><button id="annX">Cancel</button></div><div id="annList"></div></div>
@@ -2450,7 +2464,7 @@ async function remove(id){items.delete(id);if(uid){try{await sb.from("notes").de
 async function flush(){if(saveT){clearTimeout(saveT);saveT=null;await put(cur)}}
 
 /* ---------- documents ---------- */
-function grow(){const b=$("body");b.style.height="auto";b.style.height=Math.max(b.scrollHeight,innerHeight*.6)+"px";renderHL()}
+function grow(){const b=$("body"),m=$("main"),st=m.scrollTop;b.style.height="auto";b.style.height=Math.max(b.scrollHeight,innerHeight*.6)+"px";m.scrollTo({top:st,behavior:"instant"});renderHL()}
 function stats(){const w=($("body").value.trim().match(/\S+/g)||[]).length;
   $("wc").textContent=w.toLocaleString()+(w===1?" word":" words");$("rt").textContent=w?Math.max(1,Math.round(w/230))+" min read":""}
 function loadDoc(id){const it=items.get(id);if(!it)return;cur=id;loadedAt=it.updatedAt||0;
@@ -2733,6 +2747,93 @@ if(innerWidth>800)$("side").classList.add("open");
     if(data.session){if(!uid)startCloud(data.session)}else $("login").style.display="flex";
     sb.auth.onAuthStateChange((ev,s)=>{if(ev==="SIGNED_IN"&&s&&!uid)startCloud(s)});
   }else loadLocal();
+})();
+
+/* ---------- formatting (markdown marks) ---------- */
+(function(){
+  const b=$("body"),bar=$("fmt");let ls=0,le=0;
+  function edit(a,z,text,sa,sz){b.focus();b.setSelectionRange(a,z);
+    let ok=false;try{ok=document.execCommand("insertText",false,text)}catch(e){}
+    if(!ok){b.setRangeText(text,a,z,"end");b.dispatchEvent(new Event("input",{bubbles:true}))}
+    b.setSelectionRange(sa,sz)}
+  function wrapped(v,s,e,m){const L=m.length;
+    if(v.slice(s-L,s)!==m||v.slice(e,e+L)!==m)return false;
+    return L===2||(v[s-2]!=="*"&&v[e+1]!=="*")}
+  function mark(m){let s=ls,e=le;const v=b.value;if(e<=s)return;
+    while(s<e&&/\s/.test(v[s]))s++;while(e>s&&/\s/.test(v[e-1]))e--;if(e<=s)return;
+    const L=m.length,sel=v.slice(s,e);
+    if(wrapped(v,s,e,m))edit(s-L,e+L,sel,s-L,e-L);
+    else if(sel.length>2*L&&sel.startsWith(m)&&sel.endsWith(m)&&(L===2||(sel[1]!=="*"&&sel[sel.length-2]!=="*")))edit(s,e,sel.slice(L,-L),s,e-2*L);
+    else edit(s,e,m+sel+m,s+L,e+L)}
+  function lines(){const v=b.value;let s=ls,e=le;if(e>s&&v[e-1]==="\n")e--;
+    const a=v.lastIndexOf("\n",s-1)+1;let z=v.indexOf("\n",e);if(z<0)z=v.length;return[a,z,v.slice(a,z).split("\n")]}
+  function heading(){const[a,z,L]=lines(),m=/^(#{1,2}) /.exec(L[0]);
+    L[0]=m?(m[1].length===1?"## "+L[0].slice(2):L[0].slice(3)):"# "+L[0];
+    const t=L.join("\n");edit(a,z,t,a,a+t.length)}
+  function quote(){const[a,z,L]=lines(),all=L.filter(x=>x.trim()).every(x=>x.startsWith("> "));
+    const t=L.map(x=>!x.trim()?x:(all?x.slice(2):"> "+x)).join("\n");edit(a,z,t,a,a+t.length)}
+  function scene(){const v=b.value;let z=v.indexOf("\n",le);if(z<0)z=v.length;const t="\n\n***\n\n";edit(z,z,t,z+t.length,z+t.length)}
+  function run(f){if(b.readOnly)return;b.focus();b.setSelectionRange(ls,le);
+    ({b:()=>mark("**"),i:()=>mark("*"),h:heading,q:quote,s:scene})[f]?.()}
+  function place(){const vv=window.visualViewport,kb=vv?Math.max(0,innerHeight-vv.height-vv.offsetTop):0;bar.style.bottom=(kb?kb+10:56)+"px"}
+  function sync(){
+    if(document.activeElement===b){ls=b.selectionStart;le=b.selectionEnd}
+    const on=document.activeElement===b&&!b.readOnly&&le>ls;
+    bar.classList.toggle("show",on);if(on)place()}
+  document.addEventListener("selectionchange",sync);
+  b.addEventListener("blur",()=>setTimeout(()=>{if(document.activeElement!==b)bar.classList.remove("show")},150));
+  if(window.visualViewport)visualViewport.addEventListener("resize",()=>{if(bar.classList.contains("show"))place()});
+  let lt=0;const act=e=>{const t=e.target.closest("button");if(t)run(t.dataset.f)};
+  bar.addEventListener("mousedown",e=>e.preventDefault());
+  bar.addEventListener("touchstart",e=>e.preventDefault(),{passive:false});
+  bar.addEventListener("touchend",e=>{e.preventDefault();lt=Date.now();act(e)},{passive:false});
+  bar.addEventListener("click",e=>{if(Date.now()-lt<600)return;act(e)});
+  b.addEventListener("keydown",e=>{if(!(e.ctrlKey||e.metaKey)||e.altKey||b.readOnly)return;
+    const k=e.key.toLowerCase();if(k!=="b"&&k!=="i")return;e.preventDefault();ls=b.selectionStart;le=b.selectionEnd;mark(k==="b"?"**":"*")});
+})();
+
+/* ---------- formatted view when at rest ---------- */
+(function(){
+  const b=$("body"),rd=$("rd");let rest=false,idleT=null;
+  function run(par,txt,start,fl){const sp=el("span",fl,txt);sp.dataset.s=start;par.append(sp)}
+  function inline(par,t,base,fl){const re=/(\*{2,3})(\S(?:.*?\S)?)\1|\*([^\s*](?:[^*]*?[^\s*])?)\*/g;let last=0,m;
+    while((m=re.exec(t))){if(m.index>last)run(par,t.slice(last,m.index),base+last,fl);
+      const k=m[1]?m[1].length:1,c=m[1]?m[2]:m[3],add=k===1?"i":k===2?"b":"b i";
+      inline(par,c,base+m.index+k,(fl+" "+add).trim());last=m.index+m[0].length}
+    if(last<t.length)run(par,t.slice(last),base+last,fl)}
+  function lineEl(L,off){const d=el("div","l");d.dataset.s=off;let m;
+    if(L.trim()&&/^\s*(\*\s*\*\s*\*|-{3,}|_{3,})\s*$/.test(L)){d.className="l sb";d.textContent="*  *  *";return d}
+    if((m=/^(#{1,2}) (.*)$/.exec(L))){d.className="l h"+m[1].length;inline(d,m[2],off+m[1].length+1,"");return d}
+    if((m=/^>( ?)(.*)$/.exec(L))){d.className="l q";inline(d,m[2],off+1+m[1].length,"");return d}
+    if(L)inline(d,L,off,"");return d}
+  function renderRD(){rd.textContent="";let off=0;
+    for(const L of b.value.split("\n")){rd.append(lineEl(L,off));off+=L.length+1}
+    rd.style.top=b.offsetTop+"px"}
+  const can=()=>!rest&&!review&&!S.focus&&!anns.size&&b.value.trim()&&$("share").style.display!=="flex"&&!(document.activeElement===b&&b.selectionEnd>b.selectionStart);
+  function enterRest(){if(!can())return;renderRD();rest=true;rd.classList.add("on");b.classList.add("rest");
+    const h=rd.offsetHeight;if(h>b.offsetHeight)b.style.height=h+"px"}
+  function exitRest(off){if(!rest)return;rest=false;rd.classList.remove("on");b.classList.remove("rest");
+    if(off!=null){b.focus({preventScroll:true});b.setSelectionRange(off,off)}grow()}
+  const arm=()=>{clearTimeout(idleT);idleT=setTimeout(()=>{if(document.activeElement===b)enterRest()},4000)};
+  function offsetAt(x,y){let n=null,o=0;
+    if(document.caretPositionFromPoint){const p=document.caretPositionFromPoint(x,y);if(p){n=p.offsetNode;o=p.offset}}
+    else if(document.caretRangeFromPoint){const r=document.caretRangeFromPoint(x,y);if(r){n=r.startContainer;o=r.startOffset}}
+    if(!n)return b.value.length;
+    const el_=n.nodeType===3?n.parentElement:n,host=el_&&el_.closest("[data-s]");
+    if(!host||!rd.contains(host))return b.value.length;
+    return +host.dataset.s+(n.nodeType===3&&host===n.parentElement?o:0)}
+  rd.addEventListener("click",e=>{const sl=getSelection();if(sl&&!sl.isCollapsed&&rd.contains(sl.anchorNode))return;exitRest(offsetAt(e.clientX,e.clientY))});
+  b.addEventListener("input",()=>{exitRest();arm()});
+  b.addEventListener("keydown",e=>{if(["Shift","Control","Meta","Alt"].includes(e.key))return;exitRest();arm()});
+  b.addEventListener("focus",()=>{exitRest();arm()});
+  b.addEventListener("blur",()=>setTimeout(()=>{if(document.activeElement!==b)enterRest()},250));
+  document.addEventListener("selectionchange",()=>{if(document.activeElement===b&&!rest)arm()});
+  const _ld=loadDoc;loadDoc=function(id){exitRest();_ld(id);setTimeout(()=>{if(document.activeElement!==b)enterRest()},60)};
+  const _g=grow;grow=function(){_g();if(rest)renderRD()};
+  const _sb=setBody;setBody=function(v){_sb(v);if(rest)renderRD()};
+  $("revBtn").addEventListener("click",()=>{if(review)exitRest();else setTimeout(()=>{if(document.activeElement!==b)enterRest()},60)});
+  $("focusBtn").addEventListener("click",()=>{if(S.focus)exitRest()});
+  if(b.value.trim())setTimeout(()=>{if(document.activeElement!==b)enterRest()},300);
 })();
 </script>
 </body>
