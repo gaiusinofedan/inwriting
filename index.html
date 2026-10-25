@@ -109,6 +109,7 @@ input[type=text]{flex:1;min-width:0;background:var(--bg);border:1px solid var(--
 #rd .q{border-left:2px solid var(--accent);padding-left:1em;color:var(--muted)}
 #rd .sb{text-align:center;color:var(--muted);letter-spacing:.5em}
 #rd .b{font-weight:700}#rd .i{font-style:italic}
+html{overflow:hidden}body{height:var(--vvh,100%)}
 </style>
 </head>
 <body>
@@ -2780,7 +2781,7 @@ if(innerWidth>800)$("side").classList.add("open");
   function scene(){const v=b.value;let z=v.indexOf("\n",le);if(z<0)z=v.length;const t="\n\n***\n\n";edit(z,z,t,z+t.length,z+t.length)}
   function run(f){if(b.readOnly)return;b.focus();b.setSelectionRange(ls,le);
     ({b:()=>mark("**"),i:()=>mark("*"),h:heading,q:quote,s:scene})[f]?.()}
-  function place(){const vv=window.visualViewport,kb=vv?Math.max(0,innerHeight-vv.height-vv.offsetTop):0;bar.style.bottom=(kb?kb+10:56)+"px"}
+  function place(){const vv=window.visualViewport,kb=vv?Math.max(0,innerHeight-vv.height-vv.offsetTop):0;bar.style.bottom="56px"}
   function sync(){
     if(document.activeElement===b){ls=b.selectionStart;le=b.selectionEnd}
     const on=document.activeElement===b&&!b.readOnly&&le>ls;
@@ -2842,6 +2843,28 @@ if(innerWidth>800)$("side").classList.add("open");
 })();
 
 (function(){const _a=apply;apply=function(){_a();root.classList.toggle("tw",!!S.focus)}})();
+
+/* ---------- keep the caret clear of the mobile keyboard ---------- */
+(function(){
+  const vv=window.visualViewport,m=$("main"),b=$("body");let mir=null;
+  function fit(){if(!vv)return;root.style.setProperty("--vvh",vv.height+"px");
+    document.body.style.transform=vv.offsetTop>0?"translateY("+vv.offsetTop+"px)":""}
+  function caretTop(){
+    if(!mir){mir=document.createElement("div");mir.setAttribute("aria-hidden","true");
+      mir.style.cssText="position:absolute;visibility:hidden;left:-9999px;top:0;white-space:pre-wrap;overflow-wrap:break-word;padding:0";document.body.append(mir)}
+    const cs=getComputedStyle(b);
+    for(const p of["fontFamily","fontSize","fontWeight","lineHeight","letterSpacing","wordSpacing","tabSize"])mir.style[p]=cs[p];
+    mir.style.width=b.clientWidth+"px";mir.textContent=b.value.slice(0,b.selectionStart);
+    const mk=document.createElement("span");mk.textContent="\u200b";mir.append(mk);return mk.offsetTop}
+  function keepCaret(){
+    if(document.activeElement!==b||b.selectionStart!==b.selectionEnd)return;
+    const lh=parseFloat(getComputedStyle(b).lineHeight)||30,cy=b.getBoundingClientRect().top+caretTop()+lh-m.getBoundingClientRect().top,vis=m.clientHeight,lim=vis*.6;
+    if(cy>lim)m.scrollTop+=cy-lim;else if(cy<lh*2)m.scrollTop=Math.max(0,m.scrollTop-(lh*2-cy))}
+  fit();
+  if(vv){vv.addEventListener("resize",()=>{fit();setTimeout(keepCaret,60)});vv.addEventListener("scroll",fit)}
+  b.addEventListener("input",()=>{if(!isDesk())requestAnimationFrame(keepCaret)});
+  b.addEventListener("focus",()=>{if(!isDesk())setTimeout(keepCaret,350)});
+})();
 </script>
 </body>
 </html>
